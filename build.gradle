@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'jacoco'
 }
 
 group = 'ru.sashil'
@@ -22,6 +23,20 @@ test {
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"
+    }
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
     }
 }
 
