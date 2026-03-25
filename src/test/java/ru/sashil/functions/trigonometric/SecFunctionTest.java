@@ -31,4 +31,12 @@ class SecFunctionTest {
         double x = 0.5;
         assertEquals(SecFunction.sec(-x), SecFunction.sec(x), EPSILON);
     }
+
+    @Test
+    void testPeriodicity() {
+        double x = 1.0;
+        double result1 = SecFunction.sec(x);
+        double result2 = SecFunction.sec(x + 2 * Math.PI);
+        assertEquals(result1, result2, 1e-4);
+    }
 }

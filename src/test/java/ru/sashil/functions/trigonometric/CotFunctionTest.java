@@ -25,4 +25,12 @@ class CotFunctionTest {
             CotFunction.cot(0.0);
         });
     }
+
+    @Test
+    void testPeriodicity() {
+        double x = 1.0;
+        double result1 = CotFunction.cot(x);
+        double result2 = CotFunction.cot(x + Math.PI);  // cot имеет период π
+        assertEquals(result1, result2, 1e-4);
+    }
 }

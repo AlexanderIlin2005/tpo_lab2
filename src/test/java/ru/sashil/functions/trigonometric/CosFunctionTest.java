@@ -26,4 +26,12 @@ class CosFunctionTest {
         double x = 0.5;
         assertEquals(CosFunction.cos(-x), CosFunction.cos(x), EPSILON);
     }
+
+    @Test
+    void testPeriodicity() {
+        double x = 1.0;
+        double result1 = CosFunction.cos(x);
+        double result2 = CosFunction.cos(x + 2 * Math.PI);
+        assertEquals(result1, result2, 1e-6);
+    }
 }
