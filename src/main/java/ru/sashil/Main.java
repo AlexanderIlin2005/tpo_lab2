@@ -13,6 +13,7 @@ public class Main {
 
     private static final String OUTPUT_DIR = System.getProperty("user.dir") + File.separator + "plots" + File.separator;
     private static final double STEP = 0.05;
+    private static final int PRECISION = 12;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -65,7 +66,7 @@ public class Main {
         try {
             SystemFunction system = new SystemFunction();
             CSVWriter writer = new CSVWriter(system, OUTPUT_DIR);
-            writer.export(start, end, step);
+            writer.export(start, end, step, PRECISION);
             System.out.println("Экспорт завершен. Файл: " + writer.getFilePath());
         } catch (Exception e) {
             System.out.println("Ошибка при экспорте: " + e.getMessage());
@@ -94,7 +95,7 @@ public class Main {
         for (MathFunction func : functions) {
             try {
                 CSVWriter writer = new CSVWriter(func, OUTPUT_DIR);
-                writer.export(start, end, STEP);
+                writer.export(start, end, STEP, PRECISION);
                 System.out.println("  " + func.getName() + " -> " + writer.getFilePath());
             } catch (Exception e) {
                 System.out.println("  " + func.getName() + " -> ошибка: " + e.getMessage());

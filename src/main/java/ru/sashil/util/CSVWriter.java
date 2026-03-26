@@ -9,53 +9,27 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-/**
- * Универсальный класс для экспорта значений функции в CSV файл
- */
 public class CSVWriter {
     private final MathFunction function;
     private final String outputDir;
     private final String separator;
+    private static final int DEFAULT_PRECISION = 12;
 
-    /**
-     * @param function функция для экспорта
-     * @param outputDir директория для сохранения файлов
-     */
     public CSVWriter(MathFunction function, String outputDir) {
         this(function, outputDir, ";");
     }
 
-    /**
-     * @param function функция для экспорта
-     * @param outputDir директория для сохранения файлов
-     * @param separator разделитель полей (например, ";" или ",")
-     */
     public CSVWriter(MathFunction function, String outputDir, String separator) {
         this.function = function;
         this.outputDir = outputDir.endsWith(File.separator) ? outputDir : outputDir + File.separator;
         this.separator = separator;
     }
 
-    /**
-     * Экспортирует значения функции в CSV файл
-     * @param start начальное значение x
-     * @param end конечное значение x
-     * @param step шаг
-     * @throws IOException при ошибках записи
-     */
     public void export(double start, double end, double step) throws IOException {
-        export(start, end, step, null);
+        export(start, end, step, DEFAULT_PRECISION);
     }
 
-    /**
-     * Экспортирует значения функции в CSV файл с заданной точностью
-     * @param start начальное значение x
-     * @param end конечное значение x
-     * @param step шаг
-     * @param precision точность (если null, используется double)
-     * @throws IOException при ошибках записи
-     */
-    public void export(double start, double end, double step, BigDecimal precision) throws IOException {
+    public void export(double start, double end, double step, int precision) throws IOException {
         String filename = outputDir + function.getName() + ".csv";
         File dir = new File(outputDir);
         if (!dir.exists()) {
@@ -68,31 +42,23 @@ public class CSVWriter {
             for (double x = start; x <= end + step / 2; x += step) {
                 try {
                     double value = function.calculate(x);
-                    if (precision != null) {
-                        BigDecimal bd = BigDecimal.valueOf(value);
-                        bd = bd.setScale(precision.scale(), RoundingMode.HALF_UP);
-                        writer.println(formatDouble(x) + separator + bd.toPlainString());
-                    } else {
-                        writer.println(formatDouble(x) + separator + formatDouble(value));
-                    }
+                    writer.println(formatDouble(x, precision) + separator + formatDouble(value, precision));
                 } catch (Exception e) {
-                    writer.println(formatDouble(x) + separator + "NaN");
+                    writer.println(formatDouble(x, precision) + separator + "NaN");
                 }
             }
         }
     }
 
-    private String formatDouble(double d) {
+    private String formatDouble(double d, int precision) {
         if (Double.isNaN(d) || Double.isInfinite(d)) {
             return "NaN";
         }
-        // Округляем до 6 знаков для читаемости
-        return String.format("%.6f", d).replace(",", ".");
+        BigDecimal bd = BigDecimal.valueOf(d);
+        bd = bd.setScale(precision, RoundingMode.HALF_UP);
+        return bd.toPlainString();
     }
 
-    /**
-     * Возвращает полный путь к созданному файлу
-     */
     public String getFilePath() {
         return outputDir + function.getName() + ".csv";
     }
