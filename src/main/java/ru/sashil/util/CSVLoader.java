@@ -12,7 +12,7 @@ public class CSVLoader {
         Map<Double, Double> values = new HashMap<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line = reader.readLine(); // skip header
+            String line = reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length >= 2) {
@@ -21,7 +21,7 @@ public class CSVLoader {
                         double y = Double.parseDouble(parts[1]);
                         values.put(x, y);
                     } catch (NumberFormatException e) {
-                        // skip invalid lines
+
                     }
                 }
             }

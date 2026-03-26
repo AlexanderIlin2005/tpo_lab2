@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LnFunctionTest {
 
-    // Увеличиваем допуск для тестов логарифмов (ряд Тейлора дает приближение)
+
     private static final double EPSILON = 1e-2;  // 0.01
 
     @ParameterizedTest

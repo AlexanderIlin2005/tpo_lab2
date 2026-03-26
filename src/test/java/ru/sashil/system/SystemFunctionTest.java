@@ -74,7 +74,7 @@ class SystemFunctionTest {
         });
     }
 
-    // Тесты с Mockito заглушками
+
     @Test
     void testTrigonometricPartWithStubs() {
         try (MockedStatic<SecFunction> secMock = mockStatic(SecFunction.class);
@@ -165,7 +165,6 @@ class SystemFunctionTest {
                 double result = system.calculate(x);
                 assertTrue(Double.isFinite(result), "Результат для x=" + x + " должен быть конечным");
             } catch (ArithmeticException e) {
-                // x=1 - исключение, x=2 - должно работать
                 if (Math.abs(x - 1.0) > 1e-6) {
                     fail("Неожиданное исключение для x=" + x + ": " + e.getMessage());
                 }

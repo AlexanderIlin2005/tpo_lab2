@@ -36,7 +36,7 @@ class IntegrationWithStubsTest {
     static void setUp() throws IOException {
         system = new SystemFunction();
 
-        // Загружаем эталонные значения из ресурсов
+
         sinExpected = CSVLoader.loadFunctionValues("src/test/resources/expected/sin_expected.csv");
         cosExpected = CSVLoader.loadFunctionValues("src/test/resources/expected/cos_expected.csv");
         secExpected = CSVLoader.loadFunctionValues("src/test/resources/expected/sec_expected.csv");
@@ -49,7 +49,7 @@ class IntegrationWithStubsTest {
         systemExpected = CSVLoader.loadFunctionValues("src/test/resources/expected/system_expected.csv");
     }
 
-    // Тест: проверка базовой функции sin(x) по эталонным значениям
+
     @ParameterizedTest
     @CsvSource({
         "-1.5, -0.997494986604054",
@@ -63,12 +63,12 @@ class IntegrationWithStubsTest {
         assertEquals(expected, computed, EPSILON);
     }
 
-    // Тест с заглушками из эталонных значений
+
     @Test
     void testTrigonometricPartWithExpectedStubs() {
         double x = -1.0;
 
-        // Берем эталонные значения
+
         double secStub = CSVLoader.interpolate(secExpected, x);
         double cotStub = CSVLoader.interpolate(cotExpected, x);
         double sinStub = CSVLoader.interpolate(sinExpected, x);
@@ -86,19 +86,19 @@ class IntegrationWithStubsTest {
 
             double result = system.calculate(x);
 
-            // Проверяем, что заглушки были вызваны
+
             secMock.verify(() -> SecFunction.sec(x), times(1));
             cotMock.verify(() -> CotFunction.cot(x), times(1));
             sinMock.verify(() -> SinFunction.sin(x), times(1));
             cscMock.verify(() -> CscFunction.csc(x), times(1));
 
-            // Сравниваем с эталонным значением системы
+
             double expected = CSVLoader.interpolate(systemExpected, x);
             assertEquals(expected, result, 0.5);
         }
     }
 
-    // Тест с заглушками для логарифмической части
+
     @Test
     void testLogarithmicPartWithExpectedStubs() {
         double x = 2.0;

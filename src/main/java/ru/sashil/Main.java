@@ -18,11 +18,9 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Лабораторная работа #2");
         System.out.println("1 - Вычислить значение функции в точке");
         System.out.println("2 - Экспортировать значения системы функций в CSV");
-        System.out.println("3 - Экспортировать все функции в CSV (для построения графиков)");
-        System.out.print("Выберите действие: ");
+        System.out.println("3 - Экспортировать все функции в CSV");
 
         int choice = scanner.nextInt();
 
@@ -74,7 +72,6 @@ public class Main {
     }
 
     private static void exportAllFunctions() {
-        System.out.println("Экспорт всех функций...");
 
         MathFunction[] functions = {
             new SinFunction(),
@@ -102,7 +99,6 @@ public class Main {
             }
         }
 
-        System.out.println("\n✅ Все файлы сохранены в директории: " + OUTPUT_DIR);
-        System.out.println("Для построения графиков используйте внешние инструменты (Excel, Python, и т.д.)");
+        System.out.println("\nВсе файлы сохранены в директории: " + OUTPUT_DIR);
     }
 }
