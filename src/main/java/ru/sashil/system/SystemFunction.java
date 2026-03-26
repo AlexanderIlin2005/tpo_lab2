@@ -1,16 +1,18 @@
 package ru.sashil.system;
 
+import ru.sashil.functions.AbstractFunction;
 import ru.sashil.functions.trigonometric.*;
 import ru.sashil.functions.logarithmic.*;
 
-public class SystemFunction {
+public class SystemFunction extends AbstractFunction {
 
-    public static double calculate(double x) {
+    @Override
+    public double calculate(double x) {
         if (x < 0) {
             return calculateTrigonometricPart(x);
         } else if (x > 0) {
             if (Math.abs(x - 1.0) < 1e-12) {
-                throw new ArithmeticException("Функция не определена в точке x = 1 (деление на ноль)");
+                throw new ArithmeticException("Функция не определена в точке x = 1");
             }
             return calculateLogarithmicPart(x);
         } else {

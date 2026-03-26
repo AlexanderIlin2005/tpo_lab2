@@ -1,5 +1,6 @@
 package ru.sashil.system;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -12,6 +13,13 @@ import static org.mockito.Mockito.*;
 
 class SystemFunctionTest {
 
+    private SystemFunction system;
+
+    @BeforeEach
+    void setUp() {
+        system = new SystemFunction();
+    }
+
     @ParameterizedTest
     @CsvSource({
         "-2.0",
@@ -21,7 +29,7 @@ class SystemFunctionTest {
         "-0.1"
     })
     void testTrigonometricPartNoException(double x) {
-        assertDoesNotThrow(() -> SystemFunction.calculate(x));
+        assertDoesNotThrow(() -> system.calculate(x));
     }
 
     @ParameterizedTest
@@ -32,37 +40,37 @@ class SystemFunctionTest {
         "10.0"
     })
     void testLogarithmicPartNoException(double x) {
-        assertDoesNotThrow(() -> SystemFunction.calculate(x));
+        assertDoesNotThrow(() -> system.calculate(x));
     }
 
     @Test
     void testZeroPoint() {
         assertThrows(ArithmeticException.class, () -> {
-            SystemFunction.calculate(0.0);
+            system.calculate(0.0);
         });
     }
 
     @Test
     void testOnePoint() {
         assertThrows(ArithmeticException.class, () -> {
-            SystemFunction.calculate(1.0);
+            system.calculate(1.0);
         });
     }
 
     @Test
     void testTrigonometricDiscontinuity() {
         assertThrows(ArithmeticException.class, () -> {
-            SystemFunction.calculate(-Math.PI);
+            system.calculate(-Math.PI);
         });
         assertThrows(ArithmeticException.class, () -> {
-            SystemFunction.calculate(-Math.PI / 2);
+            system.calculate(-Math.PI / 2);
         });
     }
 
     @Test
     void testNegativeXTrigonometricException() {
         assertThrows(ArithmeticException.class, () -> {
-            SystemFunction.calculate(-Math.PI);
+            system.calculate(-Math.PI);
         });
     }
 
@@ -81,7 +89,7 @@ class SystemFunctionTest {
             sinMock.when(() -> SinFunction.sin(x)).thenReturn(-0.8415);
             cscMock.when(() -> CscFunction.csc(x)).thenReturn(-1.1884);
 
-            double result = SystemFunction.calculate(x);
+            double result = system.calculate(x);
 
             assertNotNull(result);
 
@@ -106,7 +114,7 @@ class SystemFunctionTest {
             log10Mock.when(() -> Log10Function.log10(x)).thenReturn(0.3010);
             lnMock.when(() -> LnFunction.ln(x)).thenReturn(0.6931);
 
-            double result = SystemFunction.calculate(x);
+            double result = system.calculate(x);
 
             assertNotNull(result);
 
@@ -130,8 +138,8 @@ class SystemFunctionTest {
             cotMock.when(() -> CotFunction.cot(x1)).thenReturn(-1.8305);
             cotMock.when(() -> CotFunction.cot(x2)).thenReturn(-0.6421);
 
-            SystemFunction.calculate(x1);
-            SystemFunction.calculate(x2);
+            system.calculate(x1);
+            system.calculate(x2);
 
             secMock.verify(() -> SecFunction.sec(x1), times(1));
             secMock.verify(() -> SecFunction.sec(x2), times(1));
@@ -144,7 +152,7 @@ class SystemFunctionTest {
     void testTrigonometricPartRealValues() {
         double[] values = {-2.0, -1.5, -1.0, -0.5, -0.1};
         for (double x : values) {
-            double result = SystemFunction.calculate(x);
+            double result = system.calculate(x);
             assertTrue(Double.isFinite(result), "Результат для x=" + x + " должен быть конечным");
         }
     }
@@ -154,7 +162,7 @@ class SystemFunctionTest {
         double[] values = {0.5, 2.0, 5.0, 10.0};
         for (double x : values) {
             try {
-                double result = SystemFunction.calculate(x);
+                double result = system.calculate(x);
                 assertTrue(Double.isFinite(result), "Результат для x=" + x + " должен быть конечным");
             } catch (ArithmeticException e) {
                 // x=1 - исключение, x=2 - должно работать

@@ -3,7 +3,7 @@ package ru.sashil;
 import ru.sashil.functions.MathFunction;
 import ru.sashil.functions.trigonometric.*;
 import ru.sashil.functions.logarithmic.*;
-import ru.sashil.system.EquationSystem;
+import ru.sashil.system.SystemFunction;
 import ru.sashil.util.CSVWriter;
 
 import java.io.File;
@@ -30,7 +30,7 @@ public class Main {
                 runSingleCalculation(scanner);
                 break;
             case 2:
-                exportSystemFunction();
+                exportSystemFunction(scanner);
                 break;
             case 3:
                 exportAllFunctions();
@@ -46,7 +46,7 @@ public class Main {
         System.out.print("Введите x: ");
         double x = scanner.nextDouble();
         try {
-            EquationSystem system = new EquationSystem();
+            SystemFunction system = new SystemFunction();
             double result = system.calculate(x);
             System.out.printf("f(%.6f) = %.6f%n", x, result);
         } catch (Exception e) {
@@ -54,9 +54,7 @@ public class Main {
         }
     }
 
-    private static void exportSystemFunction() {
-        Scanner scanner = new Scanner(System.in);
-
+    private static void exportSystemFunction(Scanner scanner) {
         System.out.print("Введите начальное x: ");
         double start = scanner.nextDouble();
         System.out.print("Введите конечное x: ");
@@ -65,7 +63,7 @@ public class Main {
         double step = scanner.nextDouble();
 
         try {
-            EquationSystem system = new EquationSystem();
+            SystemFunction system = new SystemFunction();
             CSVWriter writer = new CSVWriter(system, OUTPUT_DIR);
             writer.export(start, end, step);
             System.out.println("Экспорт завершен. Файл: " + writer.getFilePath());
@@ -87,7 +85,7 @@ public class Main {
             new Log3Function(),
             new Log5Function(),
             new Log10Function(),
-            new EquationSystem()
+            new SystemFunction()
         };
 
         double start = -10;
