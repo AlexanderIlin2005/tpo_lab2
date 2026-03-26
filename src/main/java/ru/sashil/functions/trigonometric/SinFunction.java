@@ -1,7 +1,14 @@
 package ru.sashil.functions.trigonometric;
 
-public class SinFunction {
+import ru.sashil.functions.AbstractFunction;
+
+public class SinFunction extends AbstractFunction {
     private static final double EPSILON = 1e-12;
+
+    @Override
+    public double calculate(double x) {
+        return sin(x);
+    }
 
     public static double sin(double x) {
         x = normalizeAngle(x);

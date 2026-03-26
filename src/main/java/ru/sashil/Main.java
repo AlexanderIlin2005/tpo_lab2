@@ -1,56 +1,109 @@
 package ru.sashil;
 
-import ru.sashil.system.SystemFunction;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import ru.sashil.functions.MathFunction;
+import ru.sashil.functions.trigonometric.*;
+import ru.sashil.functions.logarithmic.*;
+import ru.sashil.system.EquationSystem;
+import ru.sashil.util.CSVWriter;
+
+import java.io.File;
 import java.util.Scanner;
 
 public class Main {
+
+    private static final String OUTPUT_DIR = System.getProperty("user.dir") + File.separator + "plots" + File.separator;
+    private static final double STEP = 0.05;
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Лабораторная работа #2");
         System.out.println("1 - Вычислить значение функции в точке");
-        System.out.println("2 - Экспортировать значения в CSV файл");
+        System.out.println("2 - Экспортировать значения системы функций в CSV");
+        System.out.println("3 - Экспортировать все функции в CSV (для построения графиков)");
         System.out.print("Выберите действие: ");
 
         int choice = scanner.nextInt();
 
-        if (choice == 1) {
-            System.out.print("Введите x: ");
-            double x = scanner.nextDouble();
-            try {
-                double result = SystemFunction.calculate(x);
-                System.out.printf("f(%.6f) = %.6f%n", x, result);
-            } catch (Exception e) {
-                System.out.println("Ошибка: " + e.getMessage());
-            }
-        } else if (choice == 2) {
-            System.out.print("Введите начальное x: ");
-            double start = scanner.nextDouble();
-            System.out.print("Введите конечное x: ");
-            double end = scanner.nextDouble();
-            System.out.print("Введите шаг: ");
-            double step = scanner.nextDouble();
-            System.out.print("Введите имя файла (например, output.csv): ");
-            String filename = scanner.next();
-
-            try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
-                writer.println("x;f(x)");
-                for (double x = start; x <= end + step/2; x += step) {
-                    try {
-                        double result = SystemFunction.calculate(x);
-                        writer.printf("%.6f;%.6f%n", x, result);
-                    } catch (Exception e) {
-                        writer.printf("%.6f;ERROR%n", x);
-                    }
-                }
-                System.out.println("Экспорт завершен. Файл: " + filename);
-            } catch (Exception e) {
-                System.out.println("Ошибка при записи файла: " + e.getMessage());
-            }
+        switch (choice) {
+            case 1:
+                runSingleCalculation(scanner);
+                break;
+            case 2:
+                exportSystemFunction();
+                break;
+            case 3:
+                exportAllFunctions();
+                break;
+            default:
+                System.out.println("Неверный выбор");
         }
 
         scanner.close();
+    }
+
+    private static void runSingleCalculation(Scanner scanner) {
+        System.out.print("Введите x: ");
+        double x = scanner.nextDouble();
+        try {
+            EquationSystem system = new EquationSystem();
+            double result = system.calculate(x);
+            System.out.printf("f(%.6f) = %.6f%n", x, result);
+        } catch (Exception e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+    }
+
+    private static void exportSystemFunction() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Введите начальное x: ");
+        double start = scanner.nextDouble();
+        System.out.print("Введите конечное x: ");
+        double end = scanner.nextDouble();
+        System.out.print("Введите шаг: ");
+        double step = scanner.nextDouble();
+
+        try {
+            EquationSystem system = new EquationSystem();
+            CSVWriter writer = new CSVWriter(system, OUTPUT_DIR);
+            writer.export(start, end, step);
+            System.out.println("Экспорт завершен. Файл: " + writer.getFilePath());
+        } catch (Exception e) {
+            System.out.println("Ошибка при экспорте: " + e.getMessage());
+        }
+    }
+
+    private static void exportAllFunctions() {
+        System.out.println("Экспорт всех функций...");
+
+        MathFunction[] functions = {
+            new SinFunction(),
+            new CosFunction(),
+            new SecFunction(),
+            new CscFunction(),
+            new CotFunction(),
+            new LnFunction(),
+            new Log3Function(),
+            new Log5Function(),
+            new Log10Function(),
+            new EquationSystem()
+        };
+
+        double start = -10;
+        double end = 10;
+
+        for (MathFunction func : functions) {
+            try {
+                CSVWriter writer = new CSVWriter(func, OUTPUT_DIR);
+                writer.export(start, end, STEP);
+                System.out.println("  " + func.getName() + " -> " + writer.getFilePath());
+            } catch (Exception e) {
+                System.out.println("  " + func.getName() + " -> ошибка: " + e.getMessage());
+            }
+        }
+
+        System.out.println("\n✅ Все файлы сохранены в директории: " + OUTPUT_DIR);
+        System.out.println("Для построения графиков используйте внешние инструменты (Excel, Python, и т.д.)");
     }
 }

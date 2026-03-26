@@ -1,7 +1,14 @@
 package ru.sashil.functions.logarithmic;
 
-public class Log5Function {
-    private static final double LN5 = 1.6094379124341003; // ln(5)
+import ru.sashil.functions.AbstractFunction;
+
+public class Log5Function extends AbstractFunction {
+    private static final double LN5 = 1.6094379124341003;
+
+    @Override
+    public double calculate(double x) {
+        return log5(x);
+    }
 
     public static double log5(double x) {
         if (x <= 0) {

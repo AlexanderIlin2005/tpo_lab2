@@ -1,7 +1,14 @@
 package ru.sashil.functions.logarithmic;
 
-public class Log3Function {
-    private static final double LN3 = 1.0986122886681098; // ln(3)
+import ru.sashil.functions.AbstractFunction;
+
+public class Log3Function extends AbstractFunction {
+    private static final double LN3 = 1.0986122886681098;
+
+    @Override
+    public double calculate(double x) {
+        return log3(x);
+    }
 
     public static double log3(double x) {
         if (x <= 0) {

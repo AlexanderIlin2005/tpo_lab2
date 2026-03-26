@@ -1,6 +1,14 @@
 package ru.sashil.functions.trigonometric;
 
-public class SecFunction {
+import ru.sashil.functions.AbstractFunction;
+
+public class SecFunction extends AbstractFunction {
+
+    @Override
+    public double calculate(double x) {
+        return sec(x);
+    }
+
     public static double sec(double x) {
         double cos = CosFunction.cos(x);
         if (Math.abs(cos) < 1e-12) {

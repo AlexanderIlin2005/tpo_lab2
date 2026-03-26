@@ -1,6 +1,14 @@
 package ru.sashil.functions.trigonometric;
 
-public class CotFunction {
+import ru.sashil.functions.AbstractFunction;
+
+public class CotFunction extends AbstractFunction {
+
+    @Override
+    public double calculate(double x) {
+        return cot(x);
+    }
+
     public static double cot(double x) {
         double sin = SinFunction.sin(x);
         if (Math.abs(sin) < 1e-12) {

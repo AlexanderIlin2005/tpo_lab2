@@ -1,6 +1,14 @@
 package ru.sashil.functions.trigonometric;
 
-public class CscFunction {
+import ru.sashil.functions.AbstractFunction;
+
+public class CscFunction extends AbstractFunction {
+
+    @Override
+    public double calculate(double x) {
+        return csc(x);
+    }
+
     public static double csc(double x) {
         double sin = SinFunction.sin(x);
         if (Math.abs(sin) < 1e-12) {
