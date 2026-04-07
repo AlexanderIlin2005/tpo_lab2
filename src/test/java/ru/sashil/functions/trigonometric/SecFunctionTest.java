@@ -21,6 +21,14 @@ class SecFunctionTest {
     }
 
     @Test
+    void testPeriodicity() {
+        double x = 1.0;
+        double result1 = SecFunction.sec(x);
+        double result2 = SecFunction.sec(x + 2 * Math.PI);
+        assertEquals(result1, result2, EPSILON, "sec(x) должна иметь период 2π");
+    }
+
+    @Test
     void testDiscontinuityAtPiHalf() {
         assertThrows(ArithmeticException.class, () -> SecFunction.sec(Math.PI/2));
     }

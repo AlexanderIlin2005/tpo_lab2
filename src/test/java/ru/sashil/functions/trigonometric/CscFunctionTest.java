@@ -21,6 +21,14 @@ class CscFunctionTest {
     }
 
     @Test
+    void testPeriodicity() {
+        double x = 1.0;
+        double result1 = CscFunction.csc(x);
+        double result2 = CscFunction.csc(x + 2 * Math.PI);
+        assertEquals(result1, result2, EPSILON, "csc(x) должна иметь период 2π");
+    }
+
+    @Test
     void testDiscontinuityAtZero() {
         assertThrows(ArithmeticException.class, () -> CscFunction.csc(0.0));
     }

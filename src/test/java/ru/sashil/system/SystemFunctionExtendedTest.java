@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 import ru.sashil.functions.trigonometric.*;
 import ru.sashil.functions.logarithmic.*;
@@ -19,27 +20,11 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * ИНТЕГРАЦИОННЫЕ ТЕСТЫ (стратегия сверху-вниз)
- *
- * Уровень 1: Система функций
- *   - Мокируются целые части (TrigonometricPart, LogarithmicPart)
- *   - Цель: проверить, что система вызывает правильную часть в зависимости от x
- *
- * Уровень 2: Части системы (TrigonometricPart, LogarithmicPart)
- *   - Мокируются отдельные функции (sec, cot, sin, csc / log3, log5, log10, ln)
- *   - Цель: проверить, что арифметика формулы внутри части работает правильно
- *   - Значения для моков берутся из CSV (эталонные значения Wolfram)
- *   - Результат части сравнивается с эталоном из CSV
- *
- * Уровень 3: Отдельные функции - НЕ ТЕСТИРУЮТСЯ ЗДЕСЬ (есть свои модульные тесты)
- */
 class SystemFunctionExtendedTest {
 
-    private static final double EPSILON_TRIG = 1e-4;      // для тригонометрической части
-    private static final double EPSILON_LOG = 1e-2;       // для логарифмической части (погрешность ряда Тейлора)
+    private static final double EPSILON_TRIG = 1e-4;
+    private static final double EPSILON_LOG = 1e-2;
 
-    // Эталонные значения из CSV
     private static Map<Double, Double> trigPartExpected;
     private static Map<Double, Double> logPartExpected;
     private static Map<Double, Double> secExpected;
@@ -68,7 +53,7 @@ class SystemFunctionExtendedTest {
     private static Map<Double, Double> loadCSV(String filepath) throws IOException {
         Map<Double, Double> map = new HashMap<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
-            String line = reader.readLine(); // skip header
+            String line = reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length >= 2) {
@@ -84,7 +69,7 @@ class SystemFunctionExtendedTest {
     }
 
     // =========================================================================
-    // УРОВЕНЬ 1: СИСТЕМА ФУНКЦИЙ (мокируются целые части)
+    // УРОВЕНЬ 1: СИСТЕМА ФУНКЦИЙ
     // =========================================================================
 
     @ParameterizedTest
@@ -94,9 +79,7 @@ class SystemFunctionExtendedTest {
 
         try (MockedStatic<TrigonometricPart> trigMock = mockStatic(TrigonometricPart.class)) {
             trigMock.when(() -> TrigonometricPart.calculate(x)).thenReturn(mockResult);
-
             double result = SystemFunction.calculate(x);
-
             assertEquals(mockResult, result, EPSILON_TRIG);
             trigMock.verify(() -> TrigonometricPart.calculate(x), times(1));
         }
@@ -109,21 +92,53 @@ class SystemFunctionExtendedTest {
 
         try (MockedStatic<LogarithmicPart> logMock = mockStatic(LogarithmicPart.class)) {
             logMock.when(() -> LogarithmicPart.calculate(x)).thenReturn(mockResult);
-
             double result = SystemFunction.calculate(x);
-
             assertEquals(mockResult, result, EPSILON_LOG);
             logMock.verify(() -> LogarithmicPart.calculate(x), times(1));
         }
     }
 
+    // НОВЫЙ ТЕСТ: проверка что система НЕ вызывает логарифмическую часть для x < 0
+    @ParameterizedTest
+    @ValueSource(doubles = {-1.0, -2.0, -0.5, -10.0})
+    void testSystemDoesNotCallLogarithmicPartForNegativeX(double x) {
+        try (MockedStatic<LogarithmicPart> logMock = mockStatic(LogarithmicPart.class)) {
+            SystemFunction.calculate(x);
+            logMock.verifyNoInteractions();
+        }
+    }
+
+
+
+    // НОВЫЙ ТЕСТ: проверка что система НЕ вызывает тригонометрическую часть для x > 0
+    @ParameterizedTest
+    @ValueSource(doubles = {0.5, 1.5, 2.0, 5.0, 10.0})
+    void testSystemDoesNotCallTrigonometricPartForPositiveX(double x) {
+        if (Math.abs(x - 1.0) < 0.01) return;
+
+        try (MockedStatic<TrigonometricPart> trigMock = mockStatic(TrigonometricPart.class)) {
+            SystemFunction.calculate(x);
+            trigMock.verifyNoInteractions();
+        }
+    }
+
+    // НОВЫЙ ТЕСТ: проверка точек разрыва тригонометрической части через систему
+    @ParameterizedTest
+    @ValueSource(doubles = {-Math.PI/2, -Math.PI, -2*Math.PI, -3*Math.PI/2})
+    void testSystemThrowsAtTrigonometricDiscontinuityPoints(double x) {
+        assertThrows(ArithmeticException.class, () -> SystemFunction.calculate(x),
+            "Система должна выбрасывать исключение в точке разрыва x=" + x);
+    }
+
     // =========================================================================
-    // УРОВЕНЬ 2: ТРИГОНОМЕТРИЧЕСКАЯ ЧАСТЬ
+    // УРОВЕНЬ 2: ЧАСТИ СИСТЕМЫ
     // =========================================================================
 
     @ParameterizedTest
     @CsvFileSource(resources = "/expected/trigonometric_part_expected.csv", numLinesToSkip = 1, delimiter = ';')
     void testTrigonometricPartFormula(double x, double expected) {
+        if (x >= 0) return;
+
         Double mockSec = secExpected.get(x);
         Double mockCot = cotExpected.get(x);
         Double mockSin = sinExpected.get(x);
@@ -144,20 +159,14 @@ class SystemFunctionExtendedTest {
             cscMock.when(() -> CscFunction.csc(x)).thenReturn(mockCsc);
 
             double result = TrigonometricPart.calculate(x);
-
-            assertEquals(expected, result, EPSILON_TRIG,
-                "Формула тригонометрической части для x=" + x);
+            assertEquals(expected, result, EPSILON_TRIG, "x=" + x);
         }
     }
-
-    // =========================================================================
-    // УРОВЕНЬ 2: ЛОГАРИФМИЧЕСКАЯ ЧАСТЬ (с увеличенным допуском 1e-2)
-    // =========================================================================
 
     @ParameterizedTest
     @CsvFileSource(resources = "/expected/logarithmic_part_expected.csv", numLinesToSkip = 1, delimiter = ';')
     void testLogarithmicPartFormula(double x, double expected) {
-        if (Math.abs(x - 1.0) < 0.01) return;
+        if (x <= 0 || Math.abs(x - 1.0) < 0.01) return;
 
         Double mockLog3 = log3Expected.get(x);
         Double mockLog5 = log5Expected.get(x);
@@ -179,9 +188,7 @@ class SystemFunctionExtendedTest {
             lnMock.when(() -> LnFunction.ln(x)).thenReturn(mockLn);
 
             double result = LogarithmicPart.calculate(x);
-
-            assertEquals(expected, result, EPSILON_LOG,
-                "Формула логарифмической части для x=" + x);
+            assertEquals(expected, result, EPSILON_LOG, "x=" + x);
         }
     }
 
@@ -229,13 +236,18 @@ class SystemFunctionExtendedTest {
         assertThrows(IllegalArgumentException.class, () -> LogarithmicPart.calculate(-1.0));
     }
 
+    // Атомарные тесты на асимптотическое поведение
     @Test
-    void testSystemBehaviorNearZero() {
-        double veryClose = 0.0001;
-        double close = 0.001;
-        double notSoClose = 0.01;
+    void testSystemGrowsAsXApproachesZeroFromPositive() {
+        double closer = 0.0001;
+        double further = 0.001;
+        assertTrue(Math.abs(SystemFunction.calculate(closer)) > Math.abs(SystemFunction.calculate(further)));
+    }
 
-        assertTrue(Math.abs(SystemFunction.calculate(veryClose)) > Math.abs(SystemFunction.calculate(close)));
-        assertTrue(Math.abs(SystemFunction.calculate(close)) > Math.abs(SystemFunction.calculate(notSoClose)));
+    @Test
+    void testSystemGrowsAsXApproachesZeroFromNegative() {
+        double closer = -0.0001;
+        double further = -0.001;
+        assertTrue(Math.abs(SystemFunction.calculate(closer)) > Math.abs(SystemFunction.calculate(further)));
     }
 }

@@ -26,7 +26,29 @@ class CosFunctionTest {
         double x = 1.0;
         double result1 = CosFunction.cos(x);
         double result2 = CosFunction.cos(x + 2 * Math.PI);
+        double result3 = CosFunction.cos(x + 4 * Math.PI);
         assertEquals(result1, result2, EPSILON);
+        assertEquals(result1, result3, EPSILON);
+    }
+
+    @Test
+    void testLargeAngles() {
+        double x = 100.0;
+        double expected = CosFunction.cos(x % (2 * Math.PI));
+        double actual = CosFunction.cos(x);
+        assertEquals(expected, actual, EPSILON);
+    }
+
+    @Test
+    void testVeryLargeAngles() {
+        double x = 1000.0;
+        assertDoesNotThrow(() -> CosFunction.cos(x));
+    }
+
+    @Test
+    void testNegativeLargeAngles() {
+        double x = -100.0;
+        assertDoesNotThrow(() -> CosFunction.cos(x));
     }
 
     @Test

@@ -26,7 +26,30 @@ class SinFunctionTest {
         double x = 1.0;
         double result1 = SinFunction.sin(x);
         double result2 = SinFunction.sin(x + 2 * Math.PI);
+        double result3 = SinFunction.sin(x + 4 * Math.PI);
         assertEquals(result1, result2, EPSILON);
+        assertEquals(result1, result3, EPSILON);
+    }
+
+    @Test
+    void testLargeAngles() {
+        // Проверка нормализации больших углов
+        double x = 100.0;
+        double expected = SinFunction.sin(x % (2 * Math.PI));
+        double actual = SinFunction.sin(x);
+        assertEquals(expected, actual, EPSILON, "sin(100) должен нормализоваться");
+    }
+
+    @Test
+    void testVeryLargeAngles() {
+        double x = 1000.0;
+        assertDoesNotThrow(() -> SinFunction.sin(x));
+    }
+
+    @Test
+    void testNegativeLargeAngles() {
+        double x = -100.0;
+        assertDoesNotThrow(() -> SinFunction.sin(x));
     }
 
     @Test
