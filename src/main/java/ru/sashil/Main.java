@@ -20,41 +20,60 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Лабораторная работа #2");
-        System.out.println("1 - Вычислить значение функции в точке");
-        System.out.println("2 - Экспортировать значения системы функций в CSV");
-        System.out.println("3 - Экспортировать все функции в CSV (для построения графиков)");
-        System.out.println("4 - Показать график конкретной функции");
-        System.out.println("5 - Показать графики всех функций");
-        System.out.println("6 - Сохранить все графики в PNG");
-        System.out.print("Выберите действие: ");
+        while (true) {
+            System.out.println("\n========================================");
+            System.out.println("Лабораторная работа #2");
+            System.out.println("1 - Вычислить значение функции в точке");
+            System.out.println("2 - Экспортировать значения системы функций в CSV");
+            System.out.println("3 - Экспортировать все функции в CSV (для построения графиков)");
+            System.out.println("4 - Показать график конкретной функции");
+            System.out.println("5 - Показать графики всех функций");
+            System.out.println("6 - Сохранить все графики в PNG");
+            System.out.println("7 - Закрыть все графики");
+            System.out.println("0 - Выход");
+            System.out.print("Выберите действие: ");
 
-        int choice = scanner.nextInt();
+            int choice;
+            try {
+                choice = scanner.nextInt();
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Ошибка: введите число");
+                scanner.next();
+                continue;
+            }
 
-        switch (choice) {
-            case 1:
-                runSingleCalculation(scanner);
-                break;
-            case 2:
-                exportSystemFunction(scanner);
-                break;
-            case 3:
-                exportAllFunctions();
-                break;
-            case 4:
-                showSingleGraph(scanner);
-                break;
-            case 5:
-                showAllGraphs();
-                break;
-            case 6:
-                saveAllGraphsToPNG();
-                break;
-            default:
-                System.out.println("Неверный выбор");
+            switch (choice) {
+                case 1:
+                    runSingleCalculation(scanner);
+                    break;
+                case 2:
+                    exportSystemFunction(scanner);
+                    break;
+                case 3:
+                    exportAllFunctions();
+                    break;
+                case 4:
+                    showSingleGraph(scanner);
+                    break;
+                case 5:
+                    showAllGraphs();
+                    break;
+                case 6:
+                    saveAllGraphsToPNG();
+                    break;
+                case 7:
+                    ChartGenerator.closeAllFrames();
+                    break;
+                case 0:
+                    System.out.println("До свидания!");
+                    scanner.close();
+                    ChartGenerator.closeAllFrames();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Неверный выбор");
+            }
         }
-
-        scanner.close();
     }
 
     private static void runSingleCalculation(Scanner scanner) {
@@ -108,17 +127,16 @@ public class Main {
 
         for (int i = 0; i < functions.length; i++) {
             try {
-                final int idx = i;
                 CSVWriter writer = new CSVWriter(functions[i], OUTPUT_DIR);
                 writer.export(start, end, STEP, PRECISION);
-                System.out.println("  " + names[idx] + " -> " + writer.getFilePath());
+                System.out.println("  " + names[i] + " -> " + writer.getFilePath());
             } catch (Exception e) {
                 System.out.println("  Ошибка при экспорте: " + e.getMessage());
             }
         }
 
         System.out.println("\n✅ Все файлы сохранены в директории: " + OUTPUT_DIR);
-        System.out.println("Для построения графиков используйте пункты 4, 5 или 6");
+        System.out.println("Для построения графиков используйте пункты 4, 5, 6 или 7");
     }
 
     private static void showSingleGraph(Scanner scanner) {
@@ -131,7 +149,6 @@ public class Main {
     private static void showAllGraphs() {
         System.out.println("Открытие графиков всех функций...");
         ChartGenerator.displayAllFunctions();
-        System.out.println("Графики открыты в отдельных окнах");
     }
 
     private static void saveAllGraphsToPNG() {
