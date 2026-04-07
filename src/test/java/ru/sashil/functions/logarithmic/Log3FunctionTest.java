@@ -3,6 +3,7 @@ package ru.sashil.functions.logarithmic;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class Log3FunctionTest {
@@ -20,9 +21,14 @@ class Log3FunctionTest {
     }
 
     @Test
-    void testUndefined() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Log3Function.log3(0.0);
-        });
+    void testUndefinedAtZero() {
+        assertThrows(IllegalArgumentException.class, () -> Log3Function.log3(0.0));
+    }
+
+    @Test
+    void testUndefinedAtNegative() {
+        assertThrows(IllegalArgumentException.class, () -> Log3Function.log3(-1.0));
+        assertThrows(IllegalArgumentException.class, () -> Log3Function.log3(-0.5));
+        assertThrows(IllegalArgumentException.class, () -> Log3Function.log3(-10.0));
     }
 }

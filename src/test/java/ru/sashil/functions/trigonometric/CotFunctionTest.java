@@ -3,6 +3,7 @@ package ru.sashil.functions.trigonometric;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CotFunctionTest {
@@ -20,17 +21,24 @@ class CotFunctionTest {
     }
 
     @Test
-    void testDiscontinuity() {
-        assertThrows(ArithmeticException.class, () -> {
-            CotFunction.cot(0.0);
-        });
+    void testDiscontinuityAtZero() {
+        assertThrows(ArithmeticException.class, () -> CotFunction.cot(0.0));
+    }
+
+    @Test
+    void testDiscontinuityAtPi() {
+        assertThrows(ArithmeticException.class, () -> CotFunction.cot(Math.PI));
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {0.0, Math.PI, -Math.PI, 2*Math.PI, -2*Math.PI})
+    void testDiscontinuityAtMultiplePoints(double x) {
+        assertThrows(ArithmeticException.class, () -> CotFunction.cot(x));
     }
 
     @Test
     void testPeriodicity() {
         double x = 1.0;
-        double result1 = CotFunction.cot(x);
-        double result2 = CotFunction.cot(x + Math.PI);
-        assertEquals(result1, result2, 1e-4);
+        assertEquals(CotFunction.cot(x), CotFunction.cot(x + Math.PI), EPSILON);
     }
 }

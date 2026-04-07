@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LnFunctionTest {
 
-
-    private static final double EPSILON = 1e-2;  // 0.01
+    // Увеличенный допуск для ln (погрешность ряда Тейлора)
+    private static final double EPSILON = 1e-2;
 
     @ParameterizedTest
     @CsvSource({
@@ -18,9 +18,20 @@ class LnFunctionTest {
         "2.0, 0.6931471805599453"
     })
     void testKnownValues(double x, double expected) {
-        double result = LnFunction.ln(x);
-        assertEquals(expected, result, EPSILON,
-            "ln(" + x + ") должно быть близко к " + expected + ", получено " + result);
+        double actual = LnFunction.ln(x);
+        assertEquals(expected, actual, EPSILON, "ln(" + x + ")");
+    }
+
+    @Test
+    void testUndefinedAtZero() {
+        assertThrows(IllegalArgumentException.class, () -> LnFunction.ln(0.0));
+    }
+
+    @Test
+    void testUndefinedAtNegative() {
+        assertThrows(IllegalArgumentException.class, () -> LnFunction.ln(-1.0));
+        assertThrows(IllegalArgumentException.class, () -> LnFunction.ln(-0.5));
+        assertThrows(IllegalArgumentException.class, () -> LnFunction.ln(-10.0));
     }
 
     @Test
@@ -28,13 +39,6 @@ class LnFunctionTest {
         double ln2 = LnFunction.ln(2);
         double ln3 = LnFunction.ln(3);
         double ln6 = LnFunction.ln(6);
-        assertEquals(ln2 + ln3, ln6, EPSILON,
-            "ln(2) + ln(3) = " + (ln2 + ln3) + ", ln(6) = " + ln6);
-    }
-
-    @Test
-    void testUndefined() {
-        assertThrows(IllegalArgumentException.class, () -> LnFunction.ln(0.0));
-        assertThrows(IllegalArgumentException.class, () -> LnFunction.ln(-1.0));
+        assertEquals(ln2 + ln3, ln6, EPSILON, "ln(2) + ln(3) = ln(6)");
     }
 }

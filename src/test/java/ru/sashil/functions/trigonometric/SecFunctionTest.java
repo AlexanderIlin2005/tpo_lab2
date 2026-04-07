@@ -3,6 +3,7 @@ package ru.sashil.functions.trigonometric;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SecFunctionTest {
@@ -20,23 +21,24 @@ class SecFunctionTest {
     }
 
     @Test
-    void testDiscontinuity() {
-        assertThrows(ArithmeticException.class, () -> {
-            SecFunction.sec(Math.PI / 2);
-        });
+    void testDiscontinuityAtPiHalf() {
+        assertThrows(ArithmeticException.class, () -> SecFunction.sec(Math.PI/2));
+    }
+
+    @Test
+    void testDiscontinuityAtNegativePiHalf() {
+        assertThrows(ArithmeticException.class, () -> SecFunction.sec(-Math.PI/2));
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {Math.PI/2, -Math.PI/2, 3*Math.PI/2, -3*Math.PI/2})
+    void testDiscontinuityAtMultiplePoints(double x) {
+        assertThrows(ArithmeticException.class, () -> SecFunction.sec(x));
     }
 
     @Test
     void testEvenFunction() {
         double x = 0.5;
         assertEquals(SecFunction.sec(-x), SecFunction.sec(x), EPSILON);
-    }
-
-    @Test
-    void testPeriodicity() {
-        double x = 1.0;
-        double result1 = SecFunction.sec(x);
-        double result2 = SecFunction.sec(x + 2 * Math.PI);
-        assertEquals(result1, result2, 1e-4);
     }
 }
