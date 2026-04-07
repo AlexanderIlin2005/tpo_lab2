@@ -18,9 +18,11 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
+        System.out.println("Лабораторная работа #2");
         System.out.println("1 - Вычислить значение функции в точке");
         System.out.println("2 - Экспортировать значения системы функций в CSV");
-        System.out.println("3 - Экспортировать все функции в CSV");
+        System.out.println("3 - Экспортировать все функции в CSV (для построения графиков)");
+        System.out.print("Выберите действие: ");
 
         int choice = scanner.nextInt();
 
@@ -45,8 +47,7 @@ public class Main {
         System.out.print("Введите x: ");
         double x = scanner.nextDouble();
         try {
-            SystemFunction system = new SystemFunction();
-            double result = system.calculate(x);
+            double result = SystemFunction.calculate(x);
             System.out.printf("f(%.6f) = %.6f%n", x, result);
         } catch (Exception e) {
             System.out.println("Ошибка: " + e.getMessage());
@@ -62,8 +63,7 @@ public class Main {
         double step = scanner.nextDouble();
 
         try {
-            SystemFunction system = new SystemFunction();
-            CSVWriter writer = new CSVWriter(system, OUTPUT_DIR);
+            CSVWriter writer = new CSVWriter(x -> SystemFunction.calculate(x), OUTPUT_DIR);
             writer.export(start, end, step, PRECISION);
             System.out.println("Экспорт завершен. Файл: " + writer.getFilePath());
         } catch (Exception e) {
@@ -72,33 +72,38 @@ public class Main {
     }
 
     private static void exportAllFunctions() {
+        System.out.println("Экспорт всех функций...");
 
         MathFunction[] functions = {
-            new SinFunction(),
-            new CosFunction(),
-            new SecFunction(),
-            new CscFunction(),
-            new CotFunction(),
-            new LnFunction(),
-            new Log3Function(),
-            new Log5Function(),
-            new Log10Function(),
-            new SystemFunction()
+            x -> SinFunction.sin(x),
+            x -> CosFunction.cos(x),
+            x -> SecFunction.sec(x),
+            x -> CscFunction.csc(x),
+            x -> CotFunction.cot(x),
+            x -> LnFunction.ln(x),
+            x -> Log3Function.log3(x),
+            x -> Log5Function.log5(x),
+            x -> Log10Function.log10(x),
+            SystemFunction::calculate
         };
+
+        String[] names = {"Sin", "Cos", "Sec", "Csc", "Cot", "Ln", "Log3", "Log5", "Log10", "System"};
 
         double start = -10;
         double end = 10;
 
-        for (MathFunction func : functions) {
+        for (int i = 0; i < functions.length; i++) {
             try {
-                CSVWriter writer = new CSVWriter(func, OUTPUT_DIR);
+                final int idx = i;
+                CSVWriter writer = new CSVWriter(functions[i], OUTPUT_DIR);
                 writer.export(start, end, STEP, PRECISION);
-                System.out.println("  " + func.getName() + " -> " + writer.getFilePath());
+                System.out.println("  " + names[idx] + " -> " + writer.getFilePath());
             } catch (Exception e) {
-                System.out.println("  " + func.getName() + " -> ошибка: " + e.getMessage());
+                System.out.println("  Ошибка при экспорте: " + e.getMessage());
             }
         }
 
-        System.out.println("\nВсе файлы сохранены в директории: " + OUTPUT_DIR);
+        System.out.println("\n✅ Все файлы сохранены в директории: " + OUTPUT_DIR);
+        System.out.println("Для построения графиков используйте внешние инструменты (Excel, Python, и т.д.)");
     }
 }
