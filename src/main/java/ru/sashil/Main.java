@@ -5,8 +5,10 @@ import ru.sashil.functions.trigonometric.*;
 import ru.sashil.functions.logarithmic.*;
 import ru.sashil.system.SystemFunction;
 import ru.sashil.util.CSVWriter;
+import ru.sashil.util.ChartGenerator;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -22,6 +24,9 @@ public class Main {
         System.out.println("1 - Вычислить значение функции в точке");
         System.out.println("2 - Экспортировать значения системы функций в CSV");
         System.out.println("3 - Экспортировать все функции в CSV (для построения графиков)");
+        System.out.println("4 - Показать график конкретной функции");
+        System.out.println("5 - Показать графики всех функций");
+        System.out.println("6 - Сохранить все графики в PNG");
         System.out.print("Выберите действие: ");
 
         int choice = scanner.nextInt();
@@ -35,6 +40,15 @@ public class Main {
                 break;
             case 3:
                 exportAllFunctions();
+                break;
+            case 4:
+                showSingleGraph(scanner);
+                break;
+            case 5:
+                showAllGraphs();
+                break;
+            case 6:
+                saveAllGraphsToPNG();
                 break;
             default:
                 System.out.println("Неверный выбор");
@@ -104,6 +118,29 @@ public class Main {
         }
 
         System.out.println("\n✅ Все файлы сохранены в директории: " + OUTPUT_DIR);
-        System.out.println("Для построения графиков используйте внешние инструменты (Excel, Python, и т.д.)");
+        System.out.println("Для построения графиков используйте пункты 4, 5 или 6");
+    }
+
+    private static void showSingleGraph(Scanner scanner) {
+        System.out.println("Доступные функции: Sin, Cos, Sec, Csc, Cot, Ln, Log3, Log5, Log10, System");
+        System.out.print("Введите название функции: ");
+        String funcName = scanner.next();
+        ChartGenerator.displayFunction(funcName);
+    }
+
+    private static void showAllGraphs() {
+        System.out.println("Открытие графиков всех функций...");
+        ChartGenerator.displayAllFunctions();
+        System.out.println("Графики открыты в отдельных окнах");
+    }
+
+    private static void saveAllGraphsToPNG() {
+        System.out.println("Сохранение графиков в PNG...");
+        try {
+            ChartGenerator.saveAllAsPNG();
+            System.out.println("✅ Все графики сохранены в директории: " + OUTPUT_DIR + "png/");
+        } catch (IOException e) {
+            System.out.println("Ошибка при сохранении графиков: " + e.getMessage());
+        }
     }
 }
