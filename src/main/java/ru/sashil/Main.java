@@ -155,7 +155,7 @@ public class Main {
         System.out.println("Сохранение графиков в PNG...");
         try {
             ChartGenerator.saveAllAsPNG();
-            System.out.println("✅ Все графики сохранены в директории: " + OUTPUT_DIR + "png/");
+            System.out.println("Все графики сохранены в директории: " + OUTPUT_DIR + "png/");
         } catch (IOException e) {
             System.out.println("Ошибка при сохранении графиков: " + e.getMessage());
         }
