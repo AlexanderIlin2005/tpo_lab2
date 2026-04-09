@@ -68,9 +68,7 @@ class SystemFunctionExtendedTest {
         return map;
     }
 
-    // =========================================================================
-    // УРОВЕНЬ 1: СИСТЕМА ФУНКЦИЙ
-    // =========================================================================
+
 
     @ParameterizedTest
     @CsvFileSource(resources = "/expected/trigonometric_part_expected.csv", numLinesToSkip = 1, delimiter = ';')
@@ -98,7 +96,7 @@ class SystemFunctionExtendedTest {
         }
     }
 
-    // НОВЫЙ ТЕСТ: проверка что система НЕ вызывает логарифмическую часть для x < 0
+
     @ParameterizedTest
     @ValueSource(doubles = {-1.0, -2.0, -0.5, -10.0})
     void testSystemDoesNotCallLogarithmicPartForNegativeX(double x) {
@@ -110,7 +108,7 @@ class SystemFunctionExtendedTest {
 
 
 
-    // НОВЫЙ ТЕСТ: проверка что система НЕ вызывает тригонометрическую часть для x > 0
+
     @ParameterizedTest
     @ValueSource(doubles = {0.5, 1.5, 2.0, 5.0, 10.0})
     void testSystemDoesNotCallTrigonometricPartForPositiveX(double x) {
@@ -122,7 +120,7 @@ class SystemFunctionExtendedTest {
         }
     }
 
-    // НОВЫЙ ТЕСТ: проверка точек разрыва тригонометрической части через систему
+
     @ParameterizedTest
     @ValueSource(doubles = {-Math.PI/2, -Math.PI, -2*Math.PI, -3*Math.PI/2})
     void testSystemThrowsAtTrigonometricDiscontinuityPoints(double x) {
@@ -130,9 +128,7 @@ class SystemFunctionExtendedTest {
             "Система должна выбрасывать исключение в точке разрыва x=" + x);
     }
 
-    // =========================================================================
-    // УРОВЕНЬ 2: ЧАСТИ СИСТЕМЫ
-    // =========================================================================
+
 
     @ParameterizedTest
     @CsvFileSource(resources = "/expected/trigonometric_part_expected.csv", numLinesToSkip = 1, delimiter = ';')
@@ -192,9 +188,7 @@ class SystemFunctionExtendedTest {
         }
     }
 
-    // =========================================================================
-    // ТЕСТЫ НА ИСКЛЮЧЕНИЯ
-    // =========================================================================
+
 
     @Test
     void testSystemThrowsExceptionAtZero() {
@@ -236,7 +230,7 @@ class SystemFunctionExtendedTest {
         assertThrows(IllegalArgumentException.class, () -> LogarithmicPart.calculate(-1.0));
     }
 
-    // Атомарные тесты на асимптотическое поведение
+
     @Test
     void testSystemGrowsAsXApproachesZeroFromPositive() {
         double closer = 0.0001;
