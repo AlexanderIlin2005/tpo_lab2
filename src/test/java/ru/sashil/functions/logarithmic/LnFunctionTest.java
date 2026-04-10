@@ -55,10 +55,8 @@ class LnFunctionTest {
         double ln2 = LnFunction.ln(2);
         double ln3 = LnFunction.ln(3);
         double ln6 = LnFunction.ln(6);
-        // Используем реальные значения: ln2=0.6981721793101953, ln3=1.0986122886681098
         assertEquals(1.796784467978305, ln2 + ln3, EPSILON);
         assertEquals(1.7917594692274954, ln6, EPSILON);
-        // Свойство ln2+ln3=ln6 с учетом погрешности
         assertTrue(Math.abs((ln2 + ln3) - ln6) < 0.01);
     }
 }
