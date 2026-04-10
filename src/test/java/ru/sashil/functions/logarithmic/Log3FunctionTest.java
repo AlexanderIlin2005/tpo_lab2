@@ -25,10 +25,9 @@ class Log3FunctionTest {
         assertThrows(IllegalArgumentException.class, () -> Log3Function.log3(0.0));
     }
 
-    @Test
-    void testUndefinedAtNegative() {
-        assertThrows(IllegalArgumentException.class, () -> Log3Function.log3(-1.0));
-        assertThrows(IllegalArgumentException.class, () -> Log3Function.log3(-0.5));
-        assertThrows(IllegalArgumentException.class, () -> Log3Function.log3(-10.0));
+    @ParameterizedTest
+    @ValueSource(doubles = {-1.0, -0.5, -10.0})
+    void testUndefinedAtNegative(double value) {
+        assertThrows(IllegalArgumentException.class, () -> Log3Function.log3(value));
     }
 }

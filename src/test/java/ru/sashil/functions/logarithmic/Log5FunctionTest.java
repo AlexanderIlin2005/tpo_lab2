@@ -25,10 +25,9 @@ class Log5FunctionTest {
         assertThrows(IllegalArgumentException.class, () -> Log5Function.log5(0.0));
     }
 
-    @Test
-    void testUndefinedAtNegative() {
-        assertThrows(IllegalArgumentException.class, () -> Log5Function.log5(-1.0));
-        assertThrows(IllegalArgumentException.class, () -> Log5Function.log5(-0.5));
-        assertThrows(IllegalArgumentException.class, () -> Log5Function.log5(-10.0));
+    @ParameterizedTest
+    @ValueSource(doubles = {-1.0, -0.5, -10.0})
+    void testUndefinedAtNegative(double value) {
+        assertThrows(IllegalArgumentException.class, () -> Log5Function.log5(value));
     }
 }
